@@ -1,2 +1,2 @@
-# koa_sample
-koa搭建网站样例
+# koa2_sample
+koa2搭建网站样例
