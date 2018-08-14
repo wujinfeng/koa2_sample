@@ -28,8 +28,8 @@ render(app, {
     root: path.join(__dirname, 'views'),
     layout: 'layout',
     viewExt: 'html',
-    cache: false,
-    debug: false
+    cache: config.ejs.cache,
+    debug: config.ejs.debug
 });
 app.use(koaBody());
 
