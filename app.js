@@ -1,3 +1,5 @@
+const config = require('./config/index');
+const stripAnsi = require('strip-ansi');
 const koa = require('koa');
 const views = require('koa-views');
 const helmet = require('koa-helmet');
@@ -12,33 +14,33 @@ const log = require('./utils/log');
 const allRoutes = require('./routes/index');
 
 const app = new koa();
-app.use(logger((str, args) => {
-    log.info(args.slice(1).join(','));
-}));
-app.use(helmet());
-app.use(compress());
+onerror(app);
+app.on('error', (err, ctx) => {
+    log.error('app err:', err, ctx);
+});
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
+
+app.use(logger((str, args) => {
+    args[0] = stripAnsi(args[0]);
+    log.info(args.join(','));
+}));
+
+app.use(helmet());
+app.use(compress());
 app.use(koaStatic(__dirname + '/public'));
 app.use(views(__dirname + '/views', {
     map: {html: 'ejs'}, // 注意如果这样配置的话  {html:'ejs'} 模板的后缀名是.html
     extension: 'ejs'
 }));
-
 app.use(koaBody());
-
-onerror(app);
 
 allRoutes(app);
 
-app.on('error', (err, ctx) => {
-    console.error('app err:', err, ctx);
-});
-let port = 3000
 /* istanbul ignore next */
 if (!module.parent) {
-    app.listen(port, function () {
-        console.log(`Listening on http://localhost:${port}`);
+    app.listen(config.port, function () {
+        log.info(`Listening on http://localhost:${config.port}`);
     });
 }
 
